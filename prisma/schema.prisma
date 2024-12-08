@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User Model
 model User {
   userId            String    @id @unique @default(uuid())
   email             String    @unique
@@ -25,15 +26,16 @@ model User {
   @@map("user")
 }
 
+// Customer Model
 model Customer {
   customerId String       @id @unique @default(uuid())
   email      String       @unique
-  name       String       @db.VarChar(50)
+  name       String
   userId     String       @unique
   address    String
   gender     USER_GENDER?
   mobile     Int
-  image      String?      @default("https://res.cloudinary.com/dgqnr6nsy/image/upload/v1729188702/oe7fgduludfkl7ljvncd.jpg")
+  image      String?      @default("https://i.ibb.co.com/GvsyLqQ/user.png")
   orders     Order[]
   user       User         @relation(fields: [userId], references: [userId])
   followers  Follower[]
@@ -42,11 +44,12 @@ model Customer {
   @@map("customer")
 }
 
+// Vendor Model
 model Vendor {
   vendorId String       @id @unique @default(uuid())
   email    String       @unique
-  name     String       @db.VarChar(50)
-  image    String?      @default("https://res.cloudinary.com/dgqnr6nsy/image/upload/v1728960983/da7a7ftwrice2zyfagxr.jpg")
+  name     String
+  image    String?      @default("https://i.ibb.co.com/GvsyLqQ/user.png")
   address  String
   mobile   Int
   gender   USER_GENDER?
@@ -57,11 +60,12 @@ model Vendor {
   @@map("vendor")
 }
 
+// Admin Model
 model Admin {
   adminId String       @id @unique @default(uuid())
   email   String       @unique
-  name    String       @db.VarChar(50)
-  image   String?      @default("https://res.cloudinary.com/dgqnr6nsy/image/upload/v1728995166/rkvw1vahlhr8hh5xx96r.jpg")
+  name    String
+  image   String?      @default("https://i.ibb.co.com/GvsyLqQ/user.png")
   address String
   mobile  String
   gender  USER_GENDER?
@@ -71,9 +75,10 @@ model Admin {
   @@map("admin")
 }
 
+// Shop
 model Shop {
   shopId        String      @id @default(uuid())
-  name          String      @unique @db.VarChar(50)
+  name          String      @unique
   location      String
   vendorId      String
   createdAt     DateTime    @default(now())
@@ -89,9 +94,10 @@ model Shop {
   @@map("shop")
 }
 
+// Product Model
 model Product {
   productId   String      @id @default(uuid())
-  name        String      @db.VarChar(50)
+  name        String
   price       Float
   categoryId  String
   images      String[]
@@ -111,6 +117,7 @@ model Product {
   @@map("product")
 }
 
+// Flash Sale
 model FlashSale {
   id        String   @id @default(uuid())
   productId String
@@ -124,9 +131,10 @@ model FlashSale {
   @@map("flash_sale")
 }
 
+// Category Model
 model Category {
   categoryId String    @id @default(uuid())
-  name       String    @unique @db.VarChar(50)
+  name       String    @unique
   createdAt  DateTime  @default(now())
   isDeleted  Boolean   @default(false)
   updatedAt  DateTime  @updatedAt
@@ -135,6 +143,7 @@ model Category {
   @@map("category")
 }
 
+// Follower
 model Follower {
   id         String   @id @default(uuid())
   shopId     String
@@ -148,6 +157,7 @@ model Follower {
   @@map("follower")
 }
 
+// Order Model
 model Order {
   id             String         @id @default(uuid())
   customerId     String
@@ -155,9 +165,9 @@ model Order {
   discounts      Float
   subTotal       Float
   transactionId  String?
-  couponId       String? // Relation to Coupon
+  couponId       String?
   coupon         Coupon?        @relation(fields: [couponId], references: [id])
-  couponDiscount Float? // Discount amount applied from the coupon
+  couponDiscount Float?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   paymentStatus  PAYMENT_STATUS @default(PENDING)
@@ -166,6 +176,7 @@ model Order {
   items          OrderItem[]
 }
 
+// Order Item
 model OrderItem {
   id        String   @id @default(uuid())
   orderId   String
@@ -183,13 +194,13 @@ model OrderItem {
   Review    Review[]
 }
 
+// Coupon
 model Coupon {
   id          String    @id @default(uuid())
   code        String    @unique
-  discount    Float // Discount amount
-  // Maximum number of times this coupon can be used
-  currentUses Int       @default(0) // Tracks how many times the coupon has been used
-  expiresAt   DateTime? // Expiration date
+  discount    Float
+  currentUses Int       @default(0)
+  expiresAt   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -198,8 +209,7 @@ model Coupon {
   Order     Order[]
 }
 
-// review table
-
+// Review Model
 model Review {
   reviewId    String    @id @default(uuid())
   orderItemId String
@@ -208,9 +218,9 @@ model Review {
   customer    Customer  @relation(fields: [customerId], references: [customerId])
   productId   String
   product     Product   @relation(fields: [productId], references: [productId])
-  rating      Int // Rating value (e.g., 1 to 5)
-  comment     String? // User's review comment
-  vendorReply String? // Vendor's reply to the review
+  rating      Int
+  comment     String?
+  vendorReply String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
