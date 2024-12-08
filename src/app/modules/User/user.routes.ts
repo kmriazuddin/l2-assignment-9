@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post("/create-user", UserController.createUser);
 
+router.patch("/set-password", UserController.setNewPassword);
+
 router.get("/", auth("SUPERADMIN"), UserController.getAllUser);
 
 router.patch(

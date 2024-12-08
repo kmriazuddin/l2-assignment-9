@@ -5,4 +5,6 @@ const router = Router();
 
 router.post("/user-login", AuthController.userLogin);
 
+router.post("/reset", AuthController.resetPassLink);
+
 export const authRouter = router;

@@ -3,8 +3,9 @@ import { paginationHelper } from "../../utils/paginationHelper";
 import { Prisma } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 import config from "../../../config";
-import { tokenGenerator } from "../../utils/tokenGenerate";
+import { tokenGenerator, verifyToken } from "../../utils/tokenGenerate";
 import { IPaginationOptions } from "../../../shared/pagination.interface";
+import { AppError } from "../../errors/appError";
 
 const createUser = async (data: ICreateUser) => {
   const { address, email, password, mobile, name, accountType } = data;
@@ -54,6 +55,25 @@ const createUser = async (data: ICreateUser) => {
     return token;
   });
 
+  return result;
+};
+
+const setUserNewPassword = async (token: string, password: string) => {
+  const decoded = verifyToken(token);
+
+  const isUserExist = await prisma.user.findUnique({
+    where: { email: decoded.userEmail },
+  });
+
+  if (!isUserExist) {
+    throw new AppError(404, "User not Found");
+  }
+  const hashedPassword = await bcrypt.hash(password, Number(config.saltRound));
+
+  const result = await prisma.user.update({
+    where: { email: decoded.userEmail },
+    data: { password: hashedPassword },
+  });
   return result;
 };
 
@@ -150,6 +170,7 @@ const userDelete = async (id: string) => {
 
 export const UserService = {
   createUser,
+  setUserNewPassword,
   getAllUser,
   userBlock,
   userDelete,

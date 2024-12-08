@@ -8,7 +8,7 @@ let server: Server;
 async function main() {
   await seedSuperAdmin();
   server = app.listen(Number(config.port), () => {
-    console.log(`Example app listening on port ${config.port}`);
+    console.log(`FindX app listening on port ${config.port}`);
   });
 }
 

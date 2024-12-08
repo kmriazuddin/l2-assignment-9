@@ -14,6 +14,22 @@ const createUser = catchAsync(async (req, res) => {
   });
 });
 
+const setNewPassword = catchAsync(async (req, res) => {
+  const data = req.body;
+
+  const result = await UserService.setUserNewPassword(
+    data?.token,
+    data?.password
+  );
+
+  sendResponse(res, {
+    data: result,
+    statusCode: 200,
+    success: true,
+    message: "Password Updated Successfully",
+  });
+});
+
 const getAllUser = catchAsync(async (req, res) => {
   const paginationData = pick(req.query, ["page", "limit", "sort"]);
   const filter = pick(req.query, ["searchTerm", "isBlocked"]);
@@ -41,7 +57,7 @@ const blockUser = catchAsync(async (req, res) => {
 
 const deleteUser = catchAsync(async (req, res) => {
   const result = await UserService.userDelete(req.params.id);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -52,6 +68,7 @@ const deleteUser = catchAsync(async (req, res) => {
 
 export const UserController = {
   createUser,
+  setNewPassword,
   getAllUser,
   blockUser,
   deleteUser,
